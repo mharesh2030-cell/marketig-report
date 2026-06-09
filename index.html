@@ -3,13 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="منهجية احتساب الخسائر والفرص الضائعة - جمعية سندكم الأهلية">
-<title>منهجية احتساب الخسائر — جمعية سندكم الأهلية</title>
+<meta name="description" content="منهجية احتساب الخسائر والفرص الضائعة على الجمعية | نزاع شركة أثر التسويقية">
+<title>منهجية احتساب الخسائر والفرص الضائعة على الجمعية | نزاع شركة أثر التسويقية</title>
 
 <!--
   ⚠️ ملاحظة حول الأمان:
   كلمة المرور المعتمدة هنا هي حماية مرئية فقط (Client-Side Gate)
   لمنع الوصول العرضي. ليست تشفيراً حقيقياً.
+  كلمة المرور الحالية: 4178
   لتغيير كلمة المرور، عدّل قيمة المتغير ACCESS_PASSWORD في كود JavaScript أدناه.
 -->
 
@@ -300,6 +301,53 @@ body::before {
   margin-top: 32px;
   line-height: 1.6;
   letter-spacing: 0.02em;
+}
+
+.auth-credit {
+  margin-top: 28px;
+  text-align: center;
+}
+
+.auth-credit-line {
+  width: 80px;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(201, 162, 39, 0.4), transparent);
+  margin: 0 auto 16px;
+}
+
+.auth-credit-text {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.55);
+  line-height: 1.6;
+  letter-spacing: 0.02em;
+  font-family: var(--font-display);
+}
+
+.auth-credit-text strong {
+  color: var(--gold-light);
+  font-weight: 600;
+}
+
+.auth-credit-sep {
+  display: inline-block;
+  margin: 0 8px;
+  color: rgba(201, 162, 39, 0.4);
+  font-weight: 300;
+}
+
+.auth-credit-phone {
+  color: rgba(255, 255, 255, 0.75);
+  text-decoration: none;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  transition: color 0.2s;
+  direction: ltr;
+  unicode-bidi: embed;
+  display: inline-block;
+}
+
+.auth-credit-phone:hover {
+  color: var(--gold-light);
 }
 
 /* ============================================================
@@ -1623,6 +1671,31 @@ footer::before {
   font-family: var(--font-display);
 }
 
+.footer-phone {
+  margin-top: 8px;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.06em;
+}
+
+.footer-phone a {
+  color: rgba(255, 255, 255, 0.55);
+  text-decoration: none;
+  padding: 4px 12px;
+  border: 1px solid rgba(201, 162, 39, 0.25);
+  border-radius: 999px;
+  display: inline-block;
+  transition: all 0.2s;
+  direction: ltr;
+  unicode-bidi: embed;
+}
+
+.footer-phone a:hover {
+  color: var(--gold-light);
+  border-color: rgba(201, 162, 39, 0.5);
+  background: rgba(201, 162, 39, 0.08);
+}
+
 .footer-meta {
   font-size: 12px;
   color: rgba(255, 255, 255, 0.4);
@@ -1748,8 +1821,8 @@ footer::before {
       </svg>
     </div>
     <div class="auth-eyebrow">وثيقة سرية — وصول مقيّد</div>
-    <h1 class="auth-title">منهجية احتساب الخسائر<br>والفرص الضائعة</h1>
-    <p class="auth-subtitle">جمعية سندكم الأهلية<br>نزاع شركة أثر للحلول التسويقية</p>
+    <h1 class="auth-title">منهجية احتساب الخسائر<br>والفرص الضائعة على الجمعية</h1>
+    <p class="auth-subtitle">نزاع شركة أثر التسويقية</p>
     <div class="auth-divider"></div>
 
     <form class="auth-form" onsubmit="return checkAuth(event)">
@@ -1772,6 +1845,15 @@ footer::before {
     <div class="auth-footnote">
       هذه الوثيقة محمية بأسرار العمل وأنظمة الإفصاح المالي.<br>
       جميع البيانات الواردة فيها قابلة للتدقيق ومرتبطة بمصادر معتمدة.
+    </div>
+
+    <div class="auth-credit">
+      <div class="auth-credit-line"></div>
+      <div class="auth-credit-text">
+        إعداد وتصميم: <strong>مستشار الأعمال إبراهيم مهارش</strong>
+        <span class="auth-credit-sep">|</span>
+        <a href="tel:0556034178" class="auth-credit-phone">0556034178</a>
+      </div>
     </div>
   </div>
 </div>
@@ -1826,7 +1908,7 @@ footer::before {
       <div class="hero-eyebrow">وثيقة محاسبية تفاعلية</div>
       <h1 class="hero-title reveal">
         منهجية احتساب الخسائر <span class="accent">والفرص الضائعة</span><br>
-        على جمعية سندكم الأهلية
+        على جمعية سندكم لرعاية الأيتام ذوي الظروف الخاصة
       </h1>
       <p class="hero-lede reveal">
         تقييم مالي ومحاسبي لأداء شركة أثر للحلول التسويقية خلال حملة التبرعات الممتدة من نوفمبر 2025م إلى مارس 2026م،
@@ -2851,13 +2933,16 @@ footer::before {
           <path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </div>
-      <div class="footer-org">جمعية سندكم الأهلية</div>
+      <div class="footer-org">جمعية سندكم لرعاية الأيتام ذوي الظروف الخاصة</div>
       <div style="font-size: 13px; color: rgba(255, 255, 255, 0.5); margin-bottom: 8px;">
         جميع الحقوق محفوظة © 2026م
       </div>
       <div class="footer-divider"></div>
       <div class="footer-credit">
-        إعداد: مستشار الأعمال <strong>إبراهيم مهارش</strong>
+        إعداد وتصميم: مستشار الأعمال <strong>إبراهيم مهارش</strong>
+      </div>
+      <div class="footer-phone">
+        <a href="tel:0556034178">0556034178</a>
       </div>
       <div class="footer-meta">
         وثيقة سرية لأغراض التوثيق والتفاوض · الإصدار 1.0 · يونيو 2026م
@@ -2874,7 +2959,7 @@ footer::before {
 // ============================================================
 // 1. كلمة المرور
 // ============================================================
-const ACCESS_PASSWORD = 'Sandam2026'; // ← غيّر كلمة المرور هنا
+const ACCESS_PASSWORD = '4178'; // ← غيّر كلمة المرور هنا
 const SESSION_KEY = 'sandam_access_v1';
 
 function checkAuth(event) {
