@@ -1,0 +1,3383 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="منهجية احتساب الخسائر والفرص الضائعة - جمعية سندكم الأهلية">
+<title>منهجية احتساب الخسائر — جمعية سندكم الأهلية</title>
+
+<!--
+  ⚠️ ملاحظة حول الأمان:
+  كلمة المرور المعتمدة هنا هي حماية مرئية فقط (Client-Side Gate)
+  لمنع الوصول العرضي. ليست تشفيراً حقيقياً.
+  لتغيير كلمة المرور، عدّل قيمة المتغير ACCESS_PASSWORD في كود JavaScript أدناه.
+-->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Reem+Kufi:wght@400;500;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================
+   متغيرات التصميم
+   ============================================================ */
+:root {
+  --ink: #0B1F3A;
+  --ink-700: #1F3A68;
+  --ink-500: #4A6491;
+  --ink-300: #8FA3BF;
+  --gold: #C9A227;
+  --gold-light: #E5C45F;
+  --gold-dark: #9C7D1A;
+  --ivory: #FAF8F3;
+  --cream: #F4EFE3;
+  --paper: #FFFFFF;
+  --warning: #B22222;
+  --warning-bg: #FBE9E9;
+  --success: #1F7A4D;
+  --success-bg: #E7F4ED;
+  --text: #1A1A1A;
+  --muted: #5A5A5A;
+  --border: #E0DAC9;
+  --border-strong: #C9B98A;
+  --shadow-sm: 0 1px 3px rgba(11, 31, 58, 0.06), 0 1px 2px rgba(11, 31, 58, 0.04);
+  --shadow-md: 0 4px 12px rgba(11, 31, 58, 0.08), 0 2px 4px rgba(11, 31, 58, 0.04);
+  --shadow-lg: 0 12px 32px rgba(11, 31, 58, 0.12), 0 4px 8px rgba(11, 31, 58, 0.06);
+  --shadow-xl: 0 24px 64px rgba(11, 31, 58, 0.18);
+
+  --font-display: 'Reem Kufi', serif;
+  --font-body: 'IBM Plex Sans Arabic', sans-serif;
+  --font-serif: 'Amiri', serif;
+
+  --radius-sm: 4px;
+  --radius: 8px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+}
+
+/* ============================================================
+   إعادة ضبط أساسية
+   ============================================================ */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+*:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  font-family: var(--font-body);
+  background: var(--cream);
+  color: var(--text);
+  line-height: 1.7;
+  font-weight: 400;
+  min-height: 100vh;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* النصوص العربية */
+.arabic-numerals { font-variant-numeric: tabular-nums; }
+
+/* ============================================================
+   نسيج الخلفية (Grain Texture)
+   ============================================================ */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(11, 31, 58, 0.025) 1px, transparent 0);
+  background-size: 20px 20px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ============================================================
+   شاشة كلمة المرور (Password Gate)
+   ============================================================ */
+#auth-gate {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: linear-gradient(135deg, var(--ink) 0%, #0F2D52 50%, var(--ink) 100%);
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  overflow: hidden;
+}
+
+#auth-gate::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 30%, rgba(201, 162, 39, 0.15), transparent 50%),
+    radial-gradient(ellipse at 80% 70%, rgba(74, 100, 145, 0.2), transparent 50%);
+  pointer-events: none;
+}
+
+#auth-gate::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cpath d='M30 0l30 30-30 30L0 30z' fill='none' stroke='rgba(201, 162, 39, 0.04)' stroke-width='1'/%3E%3C/svg%3E");
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.auth-card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-lg);
+  padding: 48px 40px;
+  max-width: 480px;
+  width: 100%;
+  box-shadow: var(--shadow-xl);
+  z-index: 1;
+}
+
+.auth-ornament {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 24px;
+  display: grid;
+  place-items: center;
+  position: relative;
+}
+
+.auth-ornament svg { width: 48px; height: 48px; }
+.auth-ornament::before,
+.auth-ornament::after {
+  content: '';
+  position: absolute;
+  width: 100px;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--gold), transparent);
+  top: 50%;
+}
+.auth-ornament::before { right: 100%; margin-right: 16px; }
+.auth-ornament::after { left: 100%; margin-left: 16px; }
+
+.auth-eyebrow {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  color: var(--gold-light);
+  text-align: center;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+}
+
+.auth-title {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 600;
+  color: #FFFFFF;
+  text-align: center;
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+
+.auth-subtitle {
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.65);
+  text-align: center;
+  margin-bottom: 36px;
+  line-height: 1.6;
+}
+
+.auth-divider {
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(201, 162, 39, 0.3), transparent);
+  margin: 0 0 32px;
+}
+
+.auth-form { display: flex; flex-direction: column; gap: 20px; }
+
+.auth-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.75);
+  margin-bottom: 8px;
+  letter-spacing: 0.04em;
+}
+
+.auth-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.auth-input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  padding-left: 48px;
+  font-family: var(--font-body);
+  font-size: 16px;
+  color: #FFFFFF;
+  transition: all 0.2s ease;
+  letter-spacing: 0.04em;
+}
+
+.auth-input:focus {
+  outline: none;
+  border-color: var(--gold);
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.15);
+}
+
+.auth-input::placeholder { color: rgba(255, 255, 255, 0.3); }
+
+.auth-eye {
+  position: absolute;
+  left: 12px;
+  background: transparent;
+  border: 0;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  padding: 8px;
+  display: grid;
+  place-items: center;
+  transition: color 0.2s;
+}
+.auth-eye:hover { color: var(--gold); }
+.auth-eye svg { width: 20px; height: 20px; }
+
+.auth-submit {
+  background: var(--gold);
+  color: var(--ink);
+  border: 0;
+  border-radius: var(--radius);
+  padding: 16px 24px;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  letter-spacing: 0.04em;
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-submit:hover {
+  background: var(--gold-light);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(201, 162, 39, 0.3);
+}
+
+.auth-submit:active { transform: translateY(0); }
+
+.auth-error {
+  background: rgba(178, 34, 34, 0.15);
+  border: 1px solid rgba(178, 34, 34, 0.3);
+  color: #FFA8A8;
+  padding: 12px 16px;
+  border-radius: var(--radius);
+  font-size: 14px;
+  text-align: center;
+  margin-top: -8px;
+  display: none;
+}
+
+.auth-error.show { display: block; animation: shake 0.4s ease; }
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+
+.auth-footnote {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+  text-align: center;
+  margin-top: 32px;
+  line-height: 1.6;
+  letter-spacing: 0.02em;
+}
+
+/* ============================================================
+   التطبيق الرئيسي
+   ============================================================ */
+#app { opacity: 0; transition: opacity 0.6s ease; }
+#app.visible { opacity: 1; }
+
+/* ============================================================
+   شريط التنقل العلوي
+   ============================================================ */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+
+.topbar-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: var(--ink);
+}
+
+.brand-mark {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  background: var(--ink);
+  border-radius: 8px;
+  color: var(--gold);
+  flex-shrink: 0;
+}
+
+.brand-mark svg { width: 22px; height: 22px; }
+
+.brand-name {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.brand-name-ar {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.2;
+}
+
+.brand-name-sub {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.2;
+  letter-spacing: 0.04em;
+}
+
+.nav-links {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.nav-link {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--muted);
+  text-decoration: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.nav-link:hover { background: var(--cream); color: var(--ink); }
+.nav-link.active { background: var(--ink); color: var(--gold); }
+
+.nav-lock {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--success);
+  padding: 6px 10px;
+  background: var(--success-bg);
+  border-radius: 999px;
+  font-weight: 500;
+}
+
+.nav-lock svg { width: 14px; height: 14px; }
+
+.menu-toggle {
+  display: none;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px;
+  cursor: pointer;
+  color: var(--ink);
+}
+
+.menu-toggle svg { width: 22px; height: 22px; display: block; }
+
+/* ============================================================
+   الـ Hero
+   ============================================================ */
+.hero {
+  position: relative;
+  background: linear-gradient(170deg, var(--ink) 0%, #142E4F 100%);
+  color: #FFFFFF;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cpath d='M40 0l40 40-40 40L0 40z' fill='none' stroke='rgba(201, 162, 39, 0.03)' stroke-width='1'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 80% 20%, rgba(201, 162, 39, 0.12), transparent 50%),
+    radial-gradient(ellipse at 20% 80%, rgba(74, 100, 145, 0.2), transparent 50%);
+  pointer-events: none;
+}
+
+.hero-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 80px 24px 96px;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gold-light);
+  letter-spacing: 0.18em;
+  margin-bottom: 24px;
+  text-transform: uppercase;
+}
+
+.hero-eyebrow::after {
+  content: '';
+  width: 40px;
+  height: 1px;
+  background: var(--gold);
+}
+
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(32px, 5vw, 56px);
+  font-weight: 600;
+  line-height: 1.2;
+  margin-bottom: 24px;
+  max-width: 900px;
+  letter-spacing: -0.01em;
+}
+
+.hero-title .accent { color: var(--gold-light); }
+
+.hero-lede {
+  font-size: clamp(16px, 2vw, 19px);
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.78);
+  max-width: 740px;
+  margin-bottom: 56px;
+  font-weight: 300;
+}
+
+/* KPI Cards in Hero */
+.hero-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.hero-kpi {
+  background: rgba(255, 255, 255, 0.02);
+  padding: 28px 24px;
+  position: relative;
+  transition: background 0.3s;
+}
+
+.hero-kpi:hover { background: rgba(255, 255, 255, 0.05); }
+
+.hero-kpi-label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.55);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+}
+
+.hero-kpi-value {
+  font-family: var(--font-display);
+  font-size: clamp(24px, 3vw, 32px);
+  font-weight: 600;
+  color: #FFFFFF;
+  line-height: 1.1;
+  margin-bottom: 6px;
+  font-variant-numeric: tabular-nums;
+}
+
+.hero-kpi-value.gold { color: var(--gold-light); }
+.hero-kpi-value.warning { color: #FF8888; }
+
+.hero-kpi-unit {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 400;
+}
+
+/* ============================================================
+   البنية العامة للمحتوى
+   ============================================================ */
+main { position: relative; z-index: 1; }
+
+.section {
+  padding: 96px 24px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.section-light { background: var(--ivory); }
+.section-dark { background: var(--ink); color: #FFFFFF; }
+
+.section-header { margin-bottom: 56px; }
+
+.section-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--gold-dark);
+  letter-spacing: 0.18em;
+  margin-bottom: 16px;
+  text-transform: uppercase;
+}
+
+.section-eyebrow::before {
+  content: '';
+  width: 32px;
+  height: 1px;
+  background: var(--gold);
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 4vw, 42px);
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.25;
+  margin-bottom: 20px;
+  max-width: 800px;
+  letter-spacing: -0.005em;
+}
+
+.section-lede {
+  font-size: clamp(15px, 1.5vw, 17px);
+  color: var(--muted);
+  max-width: 720px;
+  line-height: 1.8;
+}
+
+/* ============================================================
+   قسم المبادئ المنهجية
+   ============================================================ */
+.principles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  margin-bottom: 64px;
+}
+
+.principle-card {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 32px 28px;
+  position: relative;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.principle-card::before {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 80px; height: 80px;
+  background: radial-gradient(circle at top right, rgba(201, 162, 39, 0.08), transparent 70%);
+  pointer-events: none;
+}
+
+.principle-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-lg);
+}
+
+.principle-num {
+  font-family: var(--font-display);
+  font-size: 48px;
+  font-weight: 600;
+  color: var(--gold);
+  line-height: 1;
+  margin-bottom: 16px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.principle-title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+
+.principle-desc {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+/* ============================================================
+   جدول المعادلات
+   ============================================================ */
+.equations-wrap {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-top: 32px;
+}
+
+.equations-head {
+  background: var(--ink);
+  padding: 24px 28px;
+  color: #FFFFFF;
+}
+
+.equations-head h3 {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--gold-light);
+  margin-bottom: 4px;
+}
+
+.equations-head p { font-size: 13px; color: rgba(255, 255, 255, 0.65); }
+
+.equations-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.equations-table th,
+.equations-table td {
+  padding: 16px 20px;
+  text-align: right;
+  font-size: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.equations-table th {
+  background: var(--cream);
+  font-family: var(--font-display);
+  font-weight: 500;
+  color: var(--ink);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.equations-table tr:last-child td { border-bottom: 0; }
+.equations-table tr:hover td { background: var(--ivory); }
+
+.eq-num {
+  font-family: var(--font-display);
+  color: var(--gold-dark);
+  font-weight: 600;
+}
+
+.eq-name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.eq-formula {
+  font-family: 'IBM Plex Sans Arabic', monospace;
+  font-size: 13px;
+  color: var(--ink-700);
+  direction: ltr;
+  text-align: right;
+  unicode-bidi: plaintext;
+}
+
+.eq-source {
+  font-size: 12px;
+  color: var(--muted);
+  font-style: italic;
+}
+
+.eq-mf {
+  font-family: var(--font-display);
+  color: var(--gold-dark);
+  font-weight: 600;
+  text-align: center;
+}
+
+/* ============================================================
+   قسم المدخلات
+   ============================================================ */
+.inputs-wrap {
+  display: grid;
+  gap: 32px;
+}
+
+.inputs-notice {
+  background: linear-gradient(135deg, rgba(201, 162, 39, 0.08), rgba(201, 162, 39, 0.02));
+  border: 1px solid rgba(201, 162, 39, 0.2);
+  border-radius: var(--radius-lg);
+  padding: 20px 24px;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.inputs-notice-icon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  background: var(--gold);
+  color: var(--ink);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+}
+
+.inputs-notice-icon svg { width: 22px; height: 22px; }
+
+.inputs-notice-text { flex: 1; }
+.inputs-notice-text strong {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--ink);
+  display: block;
+  margin-bottom: 4px;
+}
+.inputs-notice-text span { font-size: 14px; color: var(--muted); }
+
+.input-group {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.input-group-head {
+  background: linear-gradient(to left, var(--ink), var(--ink-700));
+  padding: 20px 28px;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.input-group-icon {
+  width: 36px;
+  height: 36px;
+  background: rgba(201, 162, 39, 0.15);
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  color: var(--gold-light);
+  flex-shrink: 0;
+}
+
+.input-group-icon svg { width: 20px; height: 20px; }
+
+.input-group-title {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 600;
+  color: #FFFFFF;
+}
+
+.input-group-subtitle {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.55);
+  margin-top: 2px;
+}
+
+.input-group-body { padding: 8px; }
+
+.input-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 200px auto;
+  gap: 16px;
+  align-items: center;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.2s;
+}
+
+.input-row:last-child { border-bottom: 0; }
+.input-row:hover { background: var(--ivory); }
+
+.input-row-label {
+  font-size: 14px;
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.input-row-source {
+  display: block;
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 400;
+  margin-top: 2px;
+}
+
+.input-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  transition: all 0.2s;
+}
+
+.input-field:focus-within {
+  border-color: var(--gold);
+  background: var(--ivory);
+  box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.1);
+}
+
+.input-field input {
+  background: transparent;
+  border: 0;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+  width: 100%;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.input-field input:focus { outline: none; }
+
+.input-unit {
+  font-size: 12px;
+  color: var(--muted);
+  flex-shrink: 0;
+  font-weight: 500;
+}
+
+.input-readonly {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ink-700);
+  text-align: left;
+  font-variant-numeric: tabular-nums;
+}
+
+.calculated-tag {
+  background: var(--success-bg);
+  color: var(--success);
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* ============================================================
+   قسم احتساب الخسائر التفصيلي
+   ============================================================ */
+.losses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+  gap: 24px;
+}
+
+.loss-card {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: all 0.3s;
+}
+
+.loss-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--border-strong);
+}
+
+.loss-card-head {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  background: linear-gradient(to bottom, var(--cream), var(--paper));
+}
+
+.loss-card-num {
+  width: 44px;
+  height: 44px;
+  background: var(--ink);
+  color: var(--gold);
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.loss-card-num::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border: 1px solid var(--gold);
+  border-radius: 14px;
+  opacity: 0.4;
+}
+
+.loss-card-title {
+  flex: 1;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.4;
+}
+
+.loss-card-body { padding: 20px 24px; }
+
+.audit-trail {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px dashed var(--border);
+}
+
+.audit-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.audit-row-label { color: var(--muted); flex: 1; }
+
+.audit-row-value {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--ink-700);
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
+.audit-row-value.warning { color: var(--warning); }
+.audit-row-value.success { color: var(--success); }
+
+.loss-formula {
+  background: var(--cream);
+  border-right: 3px solid var(--gold);
+  padding: 12px 16px;
+  border-radius: 0 8px 8px 0;
+  font-size: 13px;
+  color: var(--ink-700);
+  margin-bottom: 16px;
+  line-height: 1.6;
+}
+
+.loss-formula strong {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 12px;
+  color: var(--gold-dark);
+  margin-bottom: 4px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.loss-amounts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.loss-amount-card {
+  background: var(--cream);
+  border-radius: 10px;
+  padding: 14px;
+}
+
+.loss-amount-card.final {
+  background: linear-gradient(135deg, var(--warning-bg), rgba(178, 34, 34, 0.05));
+  border: 1px solid rgba(178, 34, 34, 0.15);
+}
+
+.loss-amount-label {
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.loss-amount-card.final .loss-amount-label { color: var(--warning); }
+
+.loss-amount-value {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+}
+
+.loss-amount-card.final .loss-amount-value { color: var(--warning); font-size: 20px; }
+
+.loss-amount-unit {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.loss-card-foot {
+  padding: 14px 24px;
+  background: var(--ivory);
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+}
+
+.loss-source { color: var(--muted); font-style: italic; }
+
+.loss-mf {
+  background: var(--ink);
+  color: var(--gold);
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 11px;
+}
+
+/* ============================================================
+   إجمالي الخسائر
+   ============================================================ */
+.total-card {
+  background: linear-gradient(135deg, var(--ink) 0%, #142E4F 100%);
+  color: #FFFFFF;
+  border-radius: var(--radius-xl);
+  padding: 48px;
+  margin-top: 48px;
+  position: relative;
+  overflow: hidden;
+}
+
+.total-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 80% 0%, rgba(201, 162, 39, 0.15), transparent 50%);
+  pointer-events: none;
+}
+
+.total-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 32px;
+  position: relative;
+  z-index: 1;
+}
+
+.total-block { display: flex; flex-direction: column; gap: 8px; }
+
+.total-block-label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.total-block-value {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 600;
+  color: #FFFFFF;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.total-block-value.gold { color: var(--gold-light); }
+.total-block-value.flash { color: #FF8888; }
+
+.total-block-unit { font-size: 13px; color: rgba(255, 255, 255, 0.5); }
+
+/* ============================================================
+   قسم الملخص التنفيذي
+   ============================================================ */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 48px;
+}
+
+.chart-card {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+}
+
+.chart-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.chart-card-title {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.chart-card-subtitle {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.chart-card-badge {
+  background: var(--cream);
+  color: var(--ink-700);
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.chart-container {
+  position: relative;
+  height: 320px;
+}
+
+/* ============================================================
+   مخطط الـ Donut المخصص (SVG)
+   ============================================================ */
+.donut-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 24px;
+  align-items: center;
+  height: 100%;
+}
+
+.donut-svg-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 200px;
+  aspect-ratio: 1;
+  margin: 0 auto;
+}
+
+.donut-svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+
+.donut-segment {
+  fill: none;
+  stroke-width: 24;
+  transition: stroke-width 0.3s ease;
+  cursor: pointer;
+}
+
+.donut-segment:hover { stroke-width: 28; }
+
+.donut-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.donut-center-value {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.donut-center-label {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 4px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.donut-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  padding: 4px 0;
+}
+
+.legend-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.legend-label {
+  flex: 1;
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.legend-value {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  font-size: 11px;
+}
+
+/* ============================================================
+   مخطط الأشرطة المخصص
+   ============================================================ */
+.bars-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  padding: 8px 0;
+  height: 100%;
+  justify-content: center;
+}
+
+.bar-group {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 12px;
+  align-items: center;
+  font-size: 12px;
+}
+
+.bar-group-label {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--ink);
+  font-size: 13px;
+}
+
+.bar-group-bars { display: flex; flex-direction: column; gap: 6px; }
+
+.bar-line {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 8px;
+  align-items: center;
+  font-size: 11px;
+}
+
+.bar-tag {
+  font-size: 9px;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-weight: 500;
+  min-width: 36px;
+}
+
+.bar-track {
+  background: var(--cream);
+  border-radius: 999px;
+  height: 14px;
+  position: relative;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+}
+
+.bar-fill.actual { background: linear-gradient(to left, var(--warning), #DC4444); }
+.bar-fill.benchmark { background: linear-gradient(to left, var(--success), #34A06A); }
+
+.bar-value {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+  min-width: 50px;
+  text-align: left;
+}
+
+/* KPI Comparison Table */
+.kpi-table {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: 48px;
+}
+
+.kpi-table table { width: 100%; border-collapse: collapse; }
+
+.kpi-table th,
+.kpi-table td {
+  padding: 16px 20px;
+  text-align: right;
+  font-size: 14px;
+  border-bottom: 1px solid var(--border);
+  font-variant-numeric: tabular-nums;
+}
+
+.kpi-table th {
+  background: var(--ink);
+  color: var(--gold-light);
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.kpi-table tr:last-child td { border-bottom: 0; }
+.kpi-table tr:hover td { background: var(--ivory); }
+
+.kpi-name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.kpi-actual { color: var(--warning); font-weight: 600; }
+.kpi-benchmark { color: var(--success); font-weight: 600; }
+.kpi-gap { color: var(--warning); font-weight: 600; }
+
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--warning-bg);
+  color: var(--warning);
+}
+
+.status-chip.severe { background: rgba(178, 34, 34, 0.15); }
+
+/* ============================================================
+   سيناريوهات المطالبة
+   ============================================================ */
+.scenarios {
+  background: linear-gradient(170deg, var(--ink), #142E4F);
+  color: #FFFFFF;
+  border-radius: var(--radius-xl);
+  padding: 48px;
+  position: relative;
+  overflow: hidden;
+}
+
+.scenarios::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 0% 100%, rgba(201, 162, 39, 0.1), transparent 50%);
+  pointer-events: none;
+}
+
+.scenarios-header {
+  text-align: center;
+  margin-bottom: 40px;
+  position: relative;
+  z-index: 1;
+}
+
+.scenarios-eyebrow {
+  font-family: var(--font-display);
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  color: var(--gold-light);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+}
+
+.scenarios-title {
+  font-family: var(--font-display);
+  font-size: clamp(24px, 3vw, 32px);
+  font-weight: 600;
+  color: #FFFFFF;
+  line-height: 1.3;
+}
+
+.scenarios-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.scenario-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  transition: all 0.3s;
+}
+
+.scenario-card.featured {
+  background: linear-gradient(135deg, rgba(201, 162, 39, 0.15), rgba(201, 162, 39, 0.05));
+  border-color: var(--gold);
+  transform: scale(1.02);
+}
+
+.scenario-card:hover { background: rgba(255, 255, 255, 0.07); }
+.scenario-card.featured:hover { background: linear-gradient(135deg, rgba(201, 162, 39, 0.2), rgba(201, 162, 39, 0.08)); }
+
+.scenario-badge {
+  display: inline-block;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.75);
+  margin-bottom: 14px;
+  font-family: var(--font-display);
+}
+
+.scenario-card.featured .scenario-badge {
+  background: var(--gold);
+  color: var(--ink);
+}
+
+.scenario-name {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin-bottom: 6px;
+}
+
+.scenario-pct {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 20px;
+}
+
+.scenario-amount {
+  font-family: var(--font-display);
+  font-size: clamp(26px, 3vw, 32px);
+  font-weight: 600;
+  color: #FFFFFF;
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 6px;
+  line-height: 1.1;
+}
+
+.scenario-card.featured .scenario-amount { color: var(--gold-light); }
+
+.scenario-unit { font-size: 12px; color: rgba(255, 255, 255, 0.5); margin-bottom: 16px; }
+
+.scenario-desc {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.65);
+  line-height: 1.6;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ============================================================
+   التذييل
+   ============================================================ */
+footer {
+  background: var(--ink);
+  color: rgba(255, 255, 255, 0.7);
+  padding: 56px 24px 32px;
+  position: relative;
+  overflow: hidden;
+}
+
+footer::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--gold), transparent);
+}
+
+.footer-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.footer-mark {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 24px;
+  display: grid;
+  place-items: center;
+  background: rgba(201, 162, 39, 0.1);
+  border: 1px solid rgba(201, 162, 39, 0.3);
+  border-radius: 14px;
+  color: var(--gold);
+}
+
+.footer-mark svg { width: 28px; height: 28px; }
+
+.footer-org {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin-bottom: 8px;
+}
+
+.footer-divider {
+  width: 60px;
+  height: 1px;
+  background: var(--gold);
+  margin: 16px auto;
+  opacity: 0.5;
+}
+
+.footer-credit {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.65);
+  margin-bottom: 4px;
+}
+
+.footer-credit strong {
+  color: var(--gold-light);
+  font-weight: 600;
+  font-family: var(--font-display);
+}
+
+.footer-meta {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+  margin-top: 24px;
+  letter-spacing: 0.04em;
+}
+
+/* ============================================================
+   عناصر تكميلية
+   ============================================================ */
+.signal-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--success);
+  margin-left: 6px;
+  box-shadow: 0 0 0 0 rgba(31, 122, 77, 0.6);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(31, 122, 77, 0.6); }
+  70% { box-shadow: 0 0 0 8px rgba(31, 122, 77, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(31, 122, 77, 0); }
+}
+
+/* Reveal on Load */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* ============================================================
+   استجابة الجوال
+   ============================================================ */
+@media (max-width: 900px) {
+  .nav-links { display: none; }
+  .menu-toggle { display: block; }
+  .nav-links.open {
+    display: flex;
+    position: absolute;
+    top: 100%; right: 0; left: 0;
+    flex-direction: column;
+    align-items: stretch;
+    background: var(--paper);
+    border-bottom: 1px solid var(--border);
+    padding: 8px;
+    gap: 0;
+  }
+  .nav-links.open .nav-link { padding: 12px 16px; border-radius: 6px; text-align: right; }
+  .nav-lock { display: none; }
+
+  .hero-inner { padding: 64px 20px 80px; }
+  .section { padding: 64px 20px; }
+  .total-card { padding: 32px 24px; }
+  .scenarios { padding: 32px 24px; }
+  .dashboard-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 640px) {
+  .topbar-inner { padding: 12px 16px; }
+  .brand-name-sub { display: none; }
+
+  .hero-inner { padding: 48px 16px 64px; }
+  .hero-kpis { grid-template-columns: 1fr 1fr; }
+
+  .section { padding: 56px 16px; }
+  .section-header { margin-bottom: 40px; }
+
+  .principles-grid { grid-template-columns: 1fr; gap: 16px; }
+  .principle-card { padding: 24px 20px; }
+  .principle-num { font-size: 36px; }
+
+  .input-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .input-readonly { text-align: right; }
+
+  .losses-grid { grid-template-columns: 1fr; }
+  .loss-card-head, .loss-card-body { padding: 18px; }
+  .loss-amounts { grid-template-columns: 1fr; }
+
+  .total-card { padding: 28px 20px; }
+  .scenarios { padding: 28px 20px; }
+  .scenarios-grid { grid-template-columns: 1fr; }
+
+  .equations-table { font-size: 12px; }
+  .equations-table th, .equations-table td { padding: 12px 14px; }
+
+  .kpi-table th, .kpi-table td { padding: 12px 14px; font-size: 12px; }
+
+  .auth-card { padding: 32px 24px; }
+  .auth-title { font-size: 22px; }
+
+  footer { padding: 40px 20px 24px; }
+}
+
+/* تجاوز جدول المعادلات على الجوال */
+@media (max-width: 640px) {
+  .equations-wrap { overflow-x: auto; }
+  .equations-table { min-width: 600px; }
+  .kpi-table { overflow-x: auto; }
+  .kpi-table table { min-width: 560px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     شاشة كلمة المرور
+     ============================================================ -->
+<div id="auth-gate">
+  <div class="auth-card">
+    <div class="auth-ornament">
+      <svg viewBox="0 0 48 48" fill="none">
+        <path d="M24 4L4 14v10c0 11 8.5 21.5 20 24 11.5-2.5 20-13 20-24V14L24 4z"
+              stroke="#C9A227" stroke-width="1.5" fill="rgba(201,162,39,0.05)"/>
+        <path d="M16 24l6 6 12-12" stroke="#C9A227" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="auth-eyebrow">وثيقة سرية — وصول مقيّد</div>
+    <h1 class="auth-title">منهجية احتساب الخسائر<br>والفرص الضائعة</h1>
+    <p class="auth-subtitle">جمعية سندكم الأهلية<br>نزاع شركة أثر للحلول التسويقية</p>
+    <div class="auth-divider"></div>
+
+    <form class="auth-form" onsubmit="return checkAuth(event)">
+      <div>
+        <label class="auth-label" for="pwd">كلمة المرور</label>
+        <div class="auth-input-wrap">
+          <input type="password" id="pwd" class="auth-input" placeholder="••••••••••" autocomplete="off" required>
+          <button type="button" class="auth-eye" onclick="togglePwd()" aria-label="إظهار/إخفاء كلمة المرور">
+            <svg id="eye-show" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="auth-error" id="auth-error">كلمة المرور غير صحيحة. حاول مرة أخرى.</div>
+      <button type="submit" class="auth-submit">الدخول إلى الوثيقة</button>
+    </form>
+
+    <div class="auth-footnote">
+      هذه الوثيقة محمية بأسرار العمل وأنظمة الإفصاح المالي.<br>
+      جميع البيانات الواردة فيها قابلة للتدقيق ومرتبطة بمصادر معتمدة.
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     التطبيق الرئيسي
+     ============================================================ -->
+<div id="app">
+
+  <!-- شريط التنقل -->
+  <nav class="topbar">
+    <div class="topbar-inner">
+      <a href="#top" class="brand">
+        <div class="brand-mark">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M12 2L2 7v6c0 5.5 4.25 10.75 10 12 5.75-1.25 10-6.5 10-12V7L12 2z"
+                  stroke="currentColor" stroke-width="1.5" fill="rgba(201,162,39,0.1)"/>
+          </svg>
+        </div>
+        <div class="brand-name">
+          <span class="brand-name-ar">جمعية سندكم</span>
+          <span class="brand-name-sub">منهجية احتساب الخسائر</span>
+        </div>
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="#methodology" class="nav-link">المنهجية</a>
+        <a href="#inputs" class="nav-link">المدخلات</a>
+        <a href="#losses" class="nav-link">احتساب الخسائر</a>
+        <a href="#summary" class="nav-link">الملخص التنفيذي</a>
+      </div>
+      <div class="nav-lock" title="جلسة معتمدة">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="11" width="18" height="11" rx="2"/>
+          <path d="M7 11V7a5 5 0 0110 0v4"/>
+        </svg>
+        <span>جلسة معتمدة</span>
+        <span class="signal-dot"></span>
+      </div>
+      <button class="menu-toggle" onclick="toggleMenu()" aria-label="القائمة">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <header class="hero" id="top">
+    <div class="hero-inner">
+      <div class="hero-eyebrow">وثيقة محاسبية تفاعلية</div>
+      <h1 class="hero-title reveal">
+        منهجية احتساب الخسائر <span class="accent">والفرص الضائعة</span><br>
+        على جمعية سندكم الأهلية
+      </h1>
+      <p class="hero-lede reveal">
+        تقييم مالي ومحاسبي لأداء شركة أثر للحلول التسويقية خلال حملة التبرعات الممتدة من نوفمبر 2025م إلى مارس 2026م،
+        مبني على ست معادلات مستقلة مرتبطة بمعايير صناعية دولية موثقة،
+        مع تطبيق عوامل تخفيف لصالح الشركة لضمان التحفّظ المحاسبي والقابلية للتدقيق.
+      </p>
+
+      <div class="hero-kpis reveal">
+        <div class="hero-kpi">
+          <div class="hero-kpi-label">إجمالي التبرعات المحققة</div>
+          <div class="hero-kpi-value" id="hero-donations">1,603,409.78</div>
+          <div class="hero-kpi-unit">ريال سعودي</div>
+        </div>
+        <div class="hero-kpi">
+          <div class="hero-kpi-label">إجمالي الإنفاق التسويقي</div>
+          <div class="hero-kpi-value" id="hero-spend">1,104,420.41</div>
+          <div class="hero-kpi-unit">ريال سعودي</div>
+        </div>
+        <div class="hero-kpi">
+          <div class="hero-kpi-label">إجمالي الخسائر الموثقة</div>
+          <div class="hero-kpi-value warning" id="hero-loss">1,531,936.07</div>
+          <div class="hero-kpi-unit">ريال — بعد التخفيف</div>
+        </div>
+        <div class="hero-kpi">
+          <div class="hero-kpi-label">إجمالي الفرصة الضائعة</div>
+          <div class="hero-kpi-value gold" id="hero-opp">3,135,345.85</div>
+          <div class="hero-kpi-unit">تبرعات محتملة لم تتحقق</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ============================================================
+         القسم 1: المنهجية
+         ============================================================ -->
+    <section class="section" id="methodology">
+      <div class="section-header">
+        <div class="section-eyebrow">القسم الأول</div>
+        <h2 class="section-title">المبادئ المنهجية الستة لاحتساب الخسائر</h2>
+        <p class="section-lede">
+          استندت المنهجية إلى ستة مبادئ مستقلة تضمن التحفّظ المحاسبي وقابلية التدقيق المستقل،
+          مع ربط ديناميكي بالبيانات الأصلية للحملة، واعتماد المعايير الصناعية الدولية الموثقة لكل مؤشر.
+        </p>
+      </div>
+
+      <div class="principles-grid">
+        <article class="principle-card">
+          <div class="principle-num">١</div>
+          <h3 class="principle-title">كل خسارة بمعادلة مستقلة</h3>
+          <p class="principle-desc">
+            لا تُستخدم معادلة موحّدة لجميع المؤشرات. تُحتسب كل خسارة بمنهجية مالية مستقلة
+            تعكس طبيعة المؤشر وآليته الفنية.
+          </p>
+        </article>
+
+        <article class="principle-card">
+          <div class="principle-num">٢</div>
+          <h3 class="principle-title">ربط مباشر بالبيانات الأصلية</h3>
+          <p class="principle-desc">
+            جميع الخسائر مرتبطة ديناميكياً ببيانات الحملة الفعلية (التبرعات، الإنفاق، أيام التوقف، الزيارات)
+            من ورقة المدخلات.
+          </p>
+        </article>
+
+        <article class="principle-card">
+          <div class="principle-num">٣</div>
+          <h3 class="principle-title">المعايير الصناعية الموثقة</h3>
+          <p class="principle-desc">
+            M+R Benchmarks · Charity Navigator · BBB Wise Giving · Triple Whale · Statista ·
+            Uptime.com · Meta Business · TechTarget.
+          </p>
+        </article>
+
+        <article class="principle-card">
+          <div class="principle-num">٤</div>
+          <h3 class="principle-title">عامل التخفيف لصالح الشركة</h3>
+          <p class="principle-desc">
+            اعتُمد عامل تخفيف لكل معادلة (Mitigation Factor) لتجنب المبالغة في التقدير،
+            وتقديم رقم خسائر متحفّظ يصعب الطعن فيه قانونياً.
+          </p>
+        </article>
+
+        <article class="principle-card">
+          <div class="principle-num">٥</div>
+          <h3 class="principle-title">قابلية التدقيق الكامل</h3>
+          <p class="principle-desc">
+            جميع المعادلات شفافة ومرئية وقابلة للتتبع خلية بخلية،
+            مع توثيق المصدر والافتراضات لكل بند.
+          </p>
+        </article>
+
+        <article class="principle-card">
+          <div class="principle-num">٦</div>
+          <h3 class="principle-title">الديناميكية الكاملة</h3>
+          <p class="principle-desc">
+            أي تعديل في المدخلات أو الفرضيات ينعكس تلقائياً على جميع نتائج الخسائر،
+            مما يتيح اختبار سيناريوهات مختلفة بدقة.
+          </p>
+        </article>
+      </div>
+
+      <div class="equations-wrap">
+        <div class="equations-head">
+          <h3>المعادلات الأساسية الست حسب المؤشر</h3>
+          <p>كل معادلة مرتبطة بمعيار صناعي دولي موثق وبعامل تخفيف لصالح الشركة</p>
+        </div>
+        <table class="equations-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>المؤشر</th>
+              <th>المعادلة الرياضية</th>
+              <th>المرجع العلمي</th>
+              <th style="text-align:center">عامل التخفيف</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="eq-num">١</td>
+              <td class="eq-name">ROAS — العائد على الإنفاق</td>
+              <td class="eq-formula">التبرعات × (ROAS₍معياري₎ − ROAS₍فعلي₎) ÷ ROAS₍معياري₎</td>
+              <td class="eq-source">M+R Benchmarks 2024</td>
+              <td class="eq-mf">0.30</td>
+            </tr>
+            <tr>
+              <td class="eq-num">٢</td>
+              <td class="eq-name">معدل التحويل (CR)</td>
+              <td class="eq-formula">(التبرعات × CR₍معياري₎ ÷ CR₍فعلي₎) − التبرعات</td>
+              <td class="eq-source">Statista 2024 — Americas</td>
+              <td class="eq-mf">0.20</td>
+            </tr>
+            <tr>
+              <td class="eq-num">٣</td>
+              <td class="eq-name">توقف Apple Pay (22 يوماً)</td>
+              <td class="eq-formula">المتوسط اليومي × أيام التوقف × نسبة استخدام Apple Pay</td>
+              <td class="eq-source">Uptime.com Standards</td>
+              <td class="eq-mf">0.75</td>
+            </tr>
+            <tr>
+              <td class="eq-num">٤</td>
+              <td class="eq-name">اضطراب منصة سلة (14 يوماً)</td>
+              <td class="eq-formula">المتوسط اليومي × أيام التأثر × نسبة الانخفاض</td>
+              <td class="eq-source">Salla Platform Logs</td>
+              <td class="eq-mf">0.60</td>
+            </tr>
+            <tr>
+              <td class="eq-num">٥</td>
+              <td class="eq-name">العشر الأواخر من رمضان</td>
+              <td class="eq-formula">متوسط تبرعات ليالي الذروة × عدد الليالي المتأثرة</td>
+              <td class="eq-source">Saudi Charity Sector Data</td>
+              <td class="eq-mf">0.75</td>
+            </tr>
+            <tr>
+              <td class="eq-num">٦</td>
+              <td class="eq-name">الإيقاف والتشغيل (+10 مرات)</td>
+              <td class="eq-formula">الإنفاق الإعلاني × نسبة انخفاض كفاءة التعلم</td>
+              <td class="eq-source">Meta Business — Learning Phase</td>
+              <td class="eq-mf">0.50</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         القسم 2: المدخلات والافتراضات
+         ============================================================ -->
+    <section class="section section-light" id="inputs">
+      <div class="section-header">
+        <div class="section-eyebrow">القسم الثاني</div>
+        <h2 class="section-title">المدخلات والافتراضات الأساسية</h2>
+        <p class="section-lede">
+          جميع المدخلات قابلة للتعديل، وأي تغيير ينعكس تلقائياً على نتائج الخسائر في القسمين التاليين.
+          هذه الديناميكية تسمح باختبار سيناريوهات مختلفة بدقة كاملة.
+        </p>
+      </div>
+
+      <div class="inputs-wrap">
+
+        <div class="inputs-notice">
+          <div class="inputs-notice-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/>
+            </svg>
+          </div>
+          <div class="inputs-notice-text">
+            <strong>نموذج محاسبي ديناميكي</strong>
+            <span>عدّل أي قيمة وستُعاد جميع الحسابات تلقائياً. القيم المُعلَّمة بشارة "محسوبة" غير قابلة للتعديل المباشر.</span>
+          </div>
+        </div>
+
+        <!-- البيانات المالية الأساسية -->
+        <div class="input-group">
+          <div class="input-group-head">
+            <div class="input-group-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="6" width="18" height="13" rx="2"/>
+                <path d="M3 10h18M8 14h.01M12 14h2"/>
+              </svg>
+            </div>
+            <div>
+              <div class="input-group-title">أولاً: البيانات المالية الأساسية للحملة</div>
+              <div class="input-group-subtitle">من تقرير شركة أثر الرسمي — نوفمبر 2025م إلى مارس 2026م</div>
+            </div>
+          </div>
+          <div class="input-group-body">
+            <div class="input-row">
+              <div class="input-row-label">
+                إجمالي التبرعات المحققة
+                <span class="input-row-source">تقرير شركة أثر الرسمي</span>
+              </div>
+              <div class="input-field">
+                <input type="number" step="0.01" data-key="totalDonations" value="1603409.78">
+                <span class="input-unit">ريال</span>
+              </div>
+              <div></div>
+            </div>
+            <div class="input-row">
+              <div class="input-row-label">
+                إجمالي الإنفاق التسويقي
+                <span class="input-row-source">تقرير شركة أثر — كل المنصات</span>
+              </div>
+              <div class="input-field">
+                <input type="number" step="0.01" data-key="totalSpend" value="1104420.41">
+                <span class="input-unit">ريال</span>
+              </div>
+              <div></div>
+            </div>
+            <div class="input-row">
+              <div class="input-row-label">
+                إجمالي الزيارات (Sessions)
+                <span class="input-row-source">Meta + Google Analytics</span>
+              </div>
+              <div class="input-field">
+                <input type="number" step="1" data-key="totalSessions" value="221549">
+                <span class="input-unit">زيارة</span>
+              </div>
+              <div></div>
+            </div>
+            <div class="input-row">
+              <div class="input-row-label">
+                عدد التبرعات (تقديري)
+                <span class="input-row-source">محسوب على متوسط 10 ر.س</span>
+              </div>
+              <div class="input-field">
+                <input type="number" step="1" data-key="totalDonors" value="160341">
+                <span class="input-unit">متبرع</span>
+              </div>
+              <div></div>
+            </div>
+            <div class="input-row">
+              <div class="input-row-label">
+                متوسط قيمة التبرعة
+                <span class="input-row-source">افتراض تحفّظي</span>
+              </div>
+              <div class="input-field">
+                <input type="number" step="0.1" data-key="avgDonation" value="10">
+                <span class="input-unit">ريال</span>
+              </div>
+              <div></div>
+            </div>
+            <div class="input-row">
+              <div class="input-row-label">
+                عدد أيام الحملة الإجمالية
+                <span class="input-row-source">نوفمبر 2025 – مارس 2026</span>
+              </div>
+              <div class="input-field">
+                <input type="number" step="1" data-key="campaignDays" value="150">
+                <span class="input-unit">يوم</span>
+              </div>
+              <div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- مؤشرات الأداء -->
+        <div class="input-group">
+          <div class="input-group-head">
+            <div class="input-group-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+              </svg>
+            </div>
+            <div>
+              <div class="input-group-title">ثانياً: مؤشرات الأداء الفعلية والمعيارية</div>
+              <div class="input-group-subtitle">قياس الأداء قياساً بالمعايير الصناعية الدولية</div>
+            </div>
+          </div>
+          <div class="input-group-body">
+            <div class="input-row">
+              <div class="input-row-label">
+                ROAS الفعلي (شركة أثر)
+                <span class="input-row-source">تقرير شركة أثر الرسمي</span>
+              </div>
+              <div class="input-field">
+                <input type="number" step="0.01" data-key="roasActual" value="1.45">
+                <span class="input-unit">x</span>
+              </div>
+              <div></div>
+            </div>
+            <div class="input-row">
+              <div class="input-row-label">
+                ROAS المعياري (الحد الأدنى)
+                <span class="input-row-source">M+R Benchmarks 2024</span>
+              </div>
+              <div class="input-field">
+                <input type="number" step="0.1" data-key="roasBenchmark" value="3.0">
+                <span class="input-unit">x</span>
+              </div>
+              <div></div>
+            </div>
+            <div class="input-row">
+              <div class="input-row-label">
+                معدل التحويل الفعلي (CR)
+                <span class="input-row-source">محسوب: 160,341 ÷ 221,549</span>
+              </div>
+              <div class="input-field">
+                <input type="number" step="0.0001" data-key="crActual" value="0.0072">
+                <span class="input-unit">نسبة</span>
+              </div>
+              <div></div>
+            </div>
+            <div class="input-row">
+              <div class="input-row-label">
+                معدل التحويل المعياري (CR)
+                <span class="input-row-source">Statista 2024 — Americas</span>
+              </div>
+              <div class="input-field">
+                <input type="number" step="0.0001" data-key="crBenchmark" value="0.025">
+                <span class="input-unit">نسبة</span>
+              </div>
+              <div></div>
+            </div>
+            <div class="input-row">
+              <div class="input-row-label">
+                CPM الفعلي على Meta
+                <span class="input-row-source">تقرير شركة أثر</span>
+              </div>
+              <div class="input-field">
+                <input type="number" step="0.01" data-key="cpmActual" value="21.31">
+                <span class="input-unit">ريال</span>
+              </div>
+              <div></div>
+            </div>
+            <div class="input-row">
+              <div class="input-row-label">
+                CPM المعياري للقطاع غير الربحي
+                <span class="input-row-source">Triple Whale 2025 (≈ 2.66$)</span>
+              </div>
+              <div class="input-field">
+                <input type="number" step="0.1" data-key="cpmBenchmark" value="10">
+                <span class="input-unit">ريال</span>
+              </div>
+              <div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- بيانات أيام التوقف -->
+        <div class="input-group">
+          <div class="input-group-head">
+            <div class="input-group-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 6v6l4 2"/>
+              </svg>
+            </div>
+            <div>
+              <div class="input-group-title">ثالثاً: بيانات الاضطرابات التشغيلية</div>
+              <div class="input-group-subtitle">توثيق فترات التوقف والاضطراب المؤثرة على الحملة</div>
+            </div>
+          </div>
+          <div class="input-group-body">
+            <div class="input-row">
+              <div class="input-row-label">
+                أيام توقف Apple Pay
+                <span class="input-row-source">1 – 22 فبراير 2026 (مُقَرّ به)</span>
+              </div>
+              <div class="input-field">
+                <input type="number" step="1" data-key="applePayDays" value="22">
+                <span class="input-unit">يوم</span>
+              </div>
+              <div></div>
+            </div>
+            <div class="input-row">
+              <div class="input-row-label">
+                نسبة استخدام Apple Pay من التبرعات
+                <span class="input-row-source">إحصاءات ميسر للسعودية</span>
+              </div>
+              <div class="input-field">
+                <input type="number" step="0.01" data-key="applePayShare" value="0.45">
+                <span class="input-unit">نسبة</span>
+              </div>
+              <div></div>
+            </div>
+            <div class="input-row">
+              <div class="input-row-label">
+                أيام تأثر منصة سلة
+                <span class="input-row-source">أول أسبوعين من رمضان</span>
+              </div>
+              <div class="input-field">
+                <input type="number" step="1" data-key="sallaDays" value="14">
+                <span class="input-unit">يوم</span>
+              </div>
+              <div></div>
+            </div>
+            <div class="input-row">
+              <div class="input-row-label">
+                نسبة الانخفاض في أيام اضطراب سلة
+                <span class="input-row-source">تقدير محافظ — بطء وعدم استجابة</span>
+              </div>
+              <div class="input-field">
+                <input type="number" step="0.01" data-key="sallaDecline" value="0.85">
+                <span class="input-unit">نسبة</span>
+              </div>
+              <div></div>
+            </div>
+            <div class="input-row">
+              <div class="input-row-label">
+                عدد ليالي رمضان المتأثرة
+                <span class="input-row-source">من ليلة 19 وحتى نهاية العشر</span>
+              </div>
+              <div class="input-field">
+                <input type="number" step="1" data-key="ramadanNights" value="8">
+                <span class="input-unit">ليلة</span>
+              </div>
+              <div></div>
+            </div>
+            <div class="input-row">
+              <div class="input-row-label">
+                مضاعف ليالي الذروة عن المتوسط
+                <span class="input-row-source">ليلة القدر = 30–50% من الشهر</span>
+              </div>
+              <div class="input-field">
+                <input type="number" step="0.1" data-key="ramadanMultiplier" value="3.5">
+                <span class="input-unit">x</span>
+              </div>
+              <div></div>
+            </div>
+            <div class="input-row">
+              <div class="input-row-label">
+                عدد مرات إيقاف/تشغيل الحملات
+                <span class="input-row-source">حسب تقرير الشركة (الحد الأدنى)</span>
+              </div>
+              <div class="input-field">
+                <input type="number" step="1" data-key="stopStartCount" value="10">
+                <span class="input-unit">مرة</span>
+              </div>
+              <div></div>
+            </div>
+            <div class="input-row">
+              <div class="input-row-label">
+                نسبة انخفاض الكفاءة من إعادة التعلم
+                <span class="input-row-source">Meta — Learning Phase Impact</span>
+              </div>
+              <div class="input-field">
+                <input type="number" step="0.01" data-key="learningPhaseLoss" value="0.20">
+                <span class="input-unit">نسبة</span>
+              </div>
+              <div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- عوامل التخفيف -->
+        <div class="input-group">
+          <div class="input-group-head">
+            <div class="input-group-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                <path d="M9 12l2 2 4-4"/>
+              </svg>
+            </div>
+            <div>
+              <div class="input-group-title">رابعاً: عوامل التخفيف (لصالح الشركة)</div>
+              <div class="input-group-subtitle">قيم بين 0 و 1 — الأقل يعني تخفيفاً أكبر لصالح الشركة</div>
+            </div>
+          </div>
+          <div class="input-group-body">
+            <div class="input-row">
+              <div class="input-row-label">
+                عامل التخفيف — ROAS
+                <span class="input-row-source">70% تخفيف — تجنباً للمبالغة</span>
+              </div>
+              <div class="input-field">
+                <input type="number" step="0.05" min="0" max="1" data-key="mfRoas" value="0.30">
+                <span class="input-unit">×</span>
+              </div>
+              <div></div>
+            </div>
+            <div class="input-row">
+              <div class="input-row-label">
+                عامل التخفيف — معدل التحويل
+                <span class="input-row-source">80% تخفيف — لعوامل خارجية</span>
+              </div>
+              <div class="input-field">
+                <input type="number" step="0.05" min="0" max="1" data-key="mfCr" value="0.20">
+                <span class="input-unit">×</span>
+              </div>
+              <div></div>
+            </div>
+            <div class="input-row">
+              <div class="input-row-label">
+                عامل التخفيف — Apple Pay
+                <span class="input-row-source">25% تخفيف — مسؤولية مباشرة</span>
+              </div>
+              <div class="input-field">
+                <input type="number" step="0.05" min="0" max="1" data-key="mfApplePay" value="0.75">
+                <span class="input-unit">×</span>
+              </div>
+              <div></div>
+            </div>
+            <div class="input-row">
+              <div class="input-row-label">
+                عامل التخفيف — منصة سلة
+                <span class="input-row-source">40% تخفيف — مسؤولية مشتركة</span>
+              </div>
+              <div class="input-field">
+                <input type="number" step="0.05" min="0" max="1" data-key="mfSalla" value="0.60">
+                <span class="input-unit">×</span>
+              </div>
+              <div></div>
+            </div>
+            <div class="input-row">
+              <div class="input-row-label">
+                عامل التخفيف — رمضان
+                <span class="input-row-source">25% تخفيف — تأخر تحويل الميزانية</span>
+              </div>
+              <div class="input-field">
+                <input type="number" step="0.05" min="0" max="1" data-key="mfRamadan" value="0.75">
+                <span class="input-unit">×</span>
+              </div>
+              <div></div>
+            </div>
+            <div class="input-row">
+              <div class="input-row-label">
+                عامل التخفيف — التوقف والتشغيل
+                <span class="input-row-source">50% تخفيف — صعوبة الإثبات الكامل</span>
+              </div>
+              <div class="input-field">
+                <input type="number" step="0.05" min="0" max="1" data-key="mfStopStart" value="0.50">
+                <span class="input-unit">×</span>
+              </div>
+              <div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- قيم محسوبة -->
+        <div class="input-group">
+          <div class="input-group-head">
+            <div class="input-group-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 3v18h18"/>
+                <path d="M7 12l4-4 4 4 6-6"/>
+              </svg>
+            </div>
+            <div>
+              <div class="input-group-title">خامساً: قيم محسوبة تلقائياً</div>
+              <div class="input-group-subtitle">تُستخدم في معادلات الخسائر — مرتبطة بالمدخلات الأساسية</div>
+            </div>
+          </div>
+          <div class="input-group-body">
+            <div class="input-row">
+              <div class="input-row-label">
+                متوسط التبرعات اليومية
+                <span class="input-row-source">إجمالي التبرعات ÷ عدد أيام الحملة</span>
+              </div>
+              <div class="input-readonly" id="calc-avgDaily">10,689.40</div>
+              <span class="calculated-tag">محسوبة</span>
+            </div>
+            <div class="input-row">
+              <div class="input-row-label">
+                متوسط تبرعات ليالي الذروة في رمضان
+                <span class="input-row-source">المتوسط اليومي × مضاعف الذروة</span>
+              </div>
+              <div class="input-readonly" id="calc-avgPeak">37,412.89</div>
+              <span class="calculated-tag">محسوبة</span>
+            </div>
+            <div class="input-row">
+              <div class="input-row-label">
+                نسبة الإنفاق إلى التبرعات (CPDR)
+                <span class="input-row-source">إجمالي الإنفاق ÷ إجمالي التبرعات</span>
+              </div>
+              <div class="input-readonly" id="calc-cpdr">68.88%</div>
+              <span class="calculated-tag">محسوبة</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ============================================================
+         القسم 3: احتساب الخسائر التفصيلي
+         ============================================================ -->
+    <section class="section" id="losses">
+      <div class="section-header">
+        <div class="section-eyebrow">القسم الثالث</div>
+        <h2 class="section-title">احتساب الخسائر التفصيلي — Audit Trail</h2>
+        <p class="section-lede">
+          البطاقات التالية تعرض احتساب كل خسارة من الست تفصيلياً: المعطيات المستخدمة،
+          المعادلة، عامل التخفيف المُطبَّق، والمصدر العلمي. جميع الأرقام تُحدَّث ديناميكياً
+          عند تعديل أي مدخل في القسم السابق.
+        </p>
+      </div>
+
+      <div class="losses-grid">
+
+        <!-- المؤشر 1: ROAS -->
+        <article class="loss-card">
+          <div class="loss-card-head">
+            <div class="loss-card-num">١</div>
+            <div class="loss-card-title">ROAS — العائد على الإنفاق الإعلاني</div>
+          </div>
+          <div class="loss-card-body">
+            <div class="audit-trail">
+              <div class="audit-row">
+                <span class="audit-row-label">إجمالي التبرعات الفعلية</span>
+                <span class="audit-row-value" data-bind="totalDonations|sar">1,603,409.78 ر.س</span>
+              </div>
+              <div class="audit-row">
+                <span class="audit-row-label">ROAS الفعلي (شركة أثر)</span>
+                <span class="audit-row-value warning" data-bind="roasActual|x">1.45x</span>
+              </div>
+              <div class="audit-row">
+                <span class="audit-row-label">ROAS المعياري</span>
+                <span class="audit-row-value success" data-bind="roasBenchmark|x">3.00x</span>
+              </div>
+              <div class="audit-row">
+                <span class="audit-row-label">نسبة الفجوة من المعيار</span>
+                <span class="audit-row-value warning" data-calc="roasGapPct">51.67%</span>
+              </div>
+            </div>
+            <div class="loss-formula">
+              <strong>المعادلة المعتمدة</strong>
+              التبرعات × (ROAS المعياري − ROAS الفعلي) ÷ ROAS المعياري
+            </div>
+            <div class="loss-amounts">
+              <div class="loss-amount-card">
+                <div class="loss-amount-label">قبل التخفيف</div>
+                <div class="loss-amount-value" data-calc="loss-roas-base">828,428.39<span class="loss-amount-unit"> ر.س</span></div>
+              </div>
+              <div class="loss-amount-card final">
+                <div class="loss-amount-label">★ الخسارة النهائية</div>
+                <div class="loss-amount-value" data-calc="loss-roas-final">248,528.52<span class="loss-amount-unit"> ر.س</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="loss-card-foot">
+            <span class="loss-source">M+R Benchmarks 2024</span>
+            <span class="loss-mf">× <span data-bind="mfRoas">0.30</span></span>
+          </div>
+        </article>
+
+        <!-- المؤشر 2: CR -->
+        <article class="loss-card">
+          <div class="loss-card-head">
+            <div class="loss-card-num">٢</div>
+            <div class="loss-card-title">معدل التحويل (Conversion Rate)</div>
+          </div>
+          <div class="loss-card-body">
+            <div class="audit-trail">
+              <div class="audit-row">
+                <span class="audit-row-label">إجمالي الزيارات</span>
+                <span class="audit-row-value" data-bind="totalSessions|int">221,549</span>
+              </div>
+              <div class="audit-row">
+                <span class="audit-row-label">معدل التحويل الفعلي</span>
+                <span class="audit-row-value warning" data-bind="crActual|pct2">0.72%</span>
+              </div>
+              <div class="audit-row">
+                <span class="audit-row-label">معدل التحويل المعياري</span>
+                <span class="audit-row-value success" data-bind="crBenchmark|pct2">2.50%</span>
+              </div>
+              <div class="audit-row">
+                <span class="audit-row-label">التبرعات المتوقعة لو بلغ المعيار</span>
+                <span class="audit-row-value" data-calc="crExpected">5,567,395.07 ر.س</span>
+              </div>
+            </div>
+            <div class="loss-formula">
+              <strong>المعادلة المعتمدة</strong>
+              (التبرعات × CR المعياري ÷ CR الفعلي) − التبرعات الفعلية
+            </div>
+            <div class="loss-amounts">
+              <div class="loss-amount-card">
+                <div class="loss-amount-label">قبل التخفيف</div>
+                <div class="loss-amount-value" data-calc="loss-cr-base">3,963,985.29<span class="loss-amount-unit"> ر.س</span></div>
+              </div>
+              <div class="loss-amount-card final">
+                <div class="loss-amount-label">★ الخسارة النهائية</div>
+                <div class="loss-amount-value" data-calc="loss-cr-final">792,797.06<span class="loss-amount-unit"> ر.س</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="loss-card-foot">
+            <span class="loss-source">Statista 2024 — Americas</span>
+            <span class="loss-mf">× <span data-bind="mfCr">0.20</span></span>
+          </div>
+        </article>
+
+        <!-- المؤشر 3: Apple Pay -->
+        <article class="loss-card">
+          <div class="loss-card-head">
+            <div class="loss-card-num">٣</div>
+            <div class="loss-card-title">توقف بوابة Apple Pay</div>
+          </div>
+          <div class="loss-card-body">
+            <div class="audit-trail">
+              <div class="audit-row">
+                <span class="audit-row-label">متوسط التبرعات اليومية</span>
+                <span class="audit-row-value" data-calc="avgDailyAudit">10,689.40 ر.س</span>
+              </div>
+              <div class="audit-row">
+                <span class="audit-row-label">أيام التوقف</span>
+                <span class="audit-row-value warning" data-bind="applePayDays|int">22 يوم</span>
+              </div>
+              <div class="audit-row">
+                <span class="audit-row-label">نسبة استخدام Apple Pay</span>
+                <span class="audit-row-value" data-bind="applePayShare|pct">45%</span>
+              </div>
+            </div>
+            <div class="loss-formula">
+              <strong>المعادلة المعتمدة</strong>
+              المتوسط اليومي × أيام التوقف × نسبة استخدام Apple Pay
+            </div>
+            <div class="loss-amounts">
+              <div class="loss-amount-card">
+                <div class="loss-amount-label">قبل التخفيف</div>
+                <div class="loss-amount-value" data-calc="loss-ap-base">105,825.05<span class="loss-amount-unit"> ر.س</span></div>
+              </div>
+              <div class="loss-amount-card final">
+                <div class="loss-amount-label">★ الخسارة النهائية</div>
+                <div class="loss-amount-value" data-calc="loss-ap-final">79,368.78<span class="loss-amount-unit"> ر.س</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="loss-card-foot">
+            <span class="loss-source">Uptime.com Standards</span>
+            <span class="loss-mf">× <span data-bind="mfApplePay">0.75</span></span>
+          </div>
+        </article>
+
+        <!-- المؤشر 4: سلة -->
+        <article class="loss-card">
+          <div class="loss-card-head">
+            <div class="loss-card-num">٤</div>
+            <div class="loss-card-title">اضطراب منصة سلة</div>
+          </div>
+          <div class="loss-card-body">
+            <div class="audit-trail">
+              <div class="audit-row">
+                <span class="audit-row-label">متوسط التبرعات اليومية</span>
+                <span class="audit-row-value" data-calc="avgDailyAudit2">10,689.40 ر.س</span>
+              </div>
+              <div class="audit-row">
+                <span class="audit-row-label">أيام التأثر</span>
+                <span class="audit-row-value warning" data-bind="sallaDays|int">14 يوم</span>
+              </div>
+              <div class="audit-row">
+                <span class="audit-row-label">نسبة الانخفاض</span>
+                <span class="audit-row-value" data-bind="sallaDecline|pct">85%</span>
+              </div>
+            </div>
+            <div class="loss-formula">
+              <strong>المعادلة المعتمدة</strong>
+              المتوسط اليومي × أيام التأثر × نسبة الانخفاض
+            </div>
+            <div class="loss-amounts">
+              <div class="loss-amount-card">
+                <div class="loss-amount-label">قبل التخفيف</div>
+                <div class="loss-amount-value" data-calc="loss-salla-base">127,203.84<span class="loss-amount-unit"> ر.س</span></div>
+              </div>
+              <div class="loss-amount-card final">
+                <div class="loss-amount-label">★ الخسارة النهائية</div>
+                <div class="loss-amount-value" data-calc="loss-salla-final">76,322.31<span class="loss-amount-unit"> ر.س</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="loss-card-foot">
+            <span class="loss-source">Salla Platform Logs</span>
+            <span class="loss-mf">× <span data-bind="mfSalla">0.60</span></span>
+          </div>
+        </article>
+
+        <!-- المؤشر 5: رمضان -->
+        <article class="loss-card">
+          <div class="loss-card-head">
+            <div class="loss-card-num">٥</div>
+            <div class="loss-card-title">العشر الأواخر من رمضان</div>
+          </div>
+          <div class="loss-card-body">
+            <div class="audit-trail">
+              <div class="audit-row">
+                <span class="audit-row-label">متوسط تبرعات ليالي الذروة</span>
+                <span class="audit-row-value" data-calc="avgPeakAudit">37,412.89 ر.س</span>
+              </div>
+              <div class="audit-row">
+                <span class="audit-row-label">عدد الليالي المتأثرة</span>
+                <span class="audit-row-value warning" data-bind="ramadanNights|int">8 ليالٍ</span>
+              </div>
+              <div class="audit-row">
+                <span class="audit-row-label">مضاعف الذروة</span>
+                <span class="audit-row-value" data-bind="ramadanMultiplier|x">3.50x</span>
+              </div>
+            </div>
+            <div class="loss-formula">
+              <strong>المعادلة المعتمدة</strong>
+              متوسط تبرعات ليالي الذروة × عدد الليالي المتأثرة
+            </div>
+            <div class="loss-amounts">
+              <div class="loss-amount-card">
+                <div class="loss-amount-label">قبل التخفيف</div>
+                <div class="loss-amount-value" data-calc="loss-ramadan-base">299,303.16<span class="loss-amount-unit"> ر.س</span></div>
+              </div>
+              <div class="loss-amount-card final">
+                <div class="loss-amount-label">★ الخسارة النهائية</div>
+                <div class="loss-amount-value" data-calc="loss-ramadan-final">224,477.37<span class="loss-amount-unit"> ر.س</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="loss-card-foot">
+            <span class="loss-source">Saudi Charity Sector</span>
+            <span class="loss-mf">× <span data-bind="mfRamadan">0.75</span></span>
+          </div>
+        </article>
+
+        <!-- المؤشر 6: إيقاف/تشغيل -->
+        <article class="loss-card">
+          <div class="loss-card-head">
+            <div class="loss-card-num">٦</div>
+            <div class="loss-card-title">الإيقاف والتشغيل المتكرر</div>
+          </div>
+          <div class="loss-card-body">
+            <div class="audit-trail">
+              <div class="audit-row">
+                <span class="audit-row-label">إجمالي الإنفاق الإعلاني</span>
+                <span class="audit-row-value" data-bind="totalSpend|sar">1,104,420.41 ر.س</span>
+              </div>
+              <div class="audit-row">
+                <span class="audit-row-label">عدد مرات الإيقاف/التشغيل</span>
+                <span class="audit-row-value warning" data-bind="stopStartCount|intPlus">10+ مرة</span>
+              </div>
+              <div class="audit-row">
+                <span class="audit-row-label">نسبة انخفاض الكفاءة</span>
+                <span class="audit-row-value" data-bind="learningPhaseLoss|pct">20%</span>
+              </div>
+            </div>
+            <div class="loss-formula">
+              <strong>المعادلة المعتمدة</strong>
+              الإنفاق الإعلاني × نسبة انخفاض الكفاءة من إعادة التعلم
+            </div>
+            <div class="loss-amounts">
+              <div class="loss-amount-card">
+                <div class="loss-amount-label">قبل التخفيف</div>
+                <div class="loss-amount-value" data-calc="loss-ss-base">220,884.08<span class="loss-amount-unit"> ر.س</span></div>
+              </div>
+              <div class="loss-amount-card final">
+                <div class="loss-amount-label">★ الخسارة النهائية</div>
+                <div class="loss-amount-value" data-calc="loss-ss-final">110,442.04<span class="loss-amount-unit"> ر.س</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="loss-card-foot">
+            <span class="loss-source">Meta — Learning Phase</span>
+            <span class="loss-mf">× <span data-bind="mfStopStart">0.50</span></span>
+          </div>
+        </article>
+
+      </div>
+
+      <!-- إجمالي الخسائر -->
+      <div class="total-card">
+        <div class="total-card-grid">
+          <div class="total-block">
+            <div class="total-block-label">إجمالي الخسائر قبل التخفيف</div>
+            <div class="total-block-value" id="total-base">5,545,629.81</div>
+            <div class="total-block-unit">ريال سعودي</div>
+          </div>
+          <div class="total-block">
+            <div class="total-block-label">إجمالي الخسائر بعد التخفيف</div>
+            <div class="total-block-value flash" id="total-final">1,531,936.07</div>
+            <div class="total-block-unit">ريال سعودي — الرقم الموثّق</div>
+          </div>
+          <div class="total-block">
+            <div class="total-block-label">إجمالي الفرصة الضائعة</div>
+            <div class="total-block-value gold" id="total-opp">3,135,345.85</div>
+            <div class="total-block-unit">ريال — تبرعات محتملة</div>
+          </div>
+          <div class="total-block">
+            <div class="total-block-label">ROAS لو لم تحدث الإخفاقات</div>
+            <div class="total-block-value gold" id="total-roas-without">2.84x</div>
+            <div class="total-block-unit">مقابل 1.45x فعلياً</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         القسم 4: الملخص التنفيذي
+         ============================================================ -->
+    <section class="section section-light" id="summary">
+      <div class="section-header">
+        <div class="section-eyebrow">القسم الرابع</div>
+        <h2 class="section-title">الملخص التنفيذي — لوحة المؤشرات</h2>
+        <p class="section-lede">
+          عرض موجز للأداء قياساً بالمعايير المرجعية، مع توزيع الخسائر بصرياً
+          وسيناريوهات المطالبة بالتعويض المُتاحة لإدارة الجمعية.
+        </p>
+      </div>
+
+      <!-- الرسوم البيانية -->
+      <div class="dashboard-grid">
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <div>
+              <div class="chart-card-title">توزيع الخسائر بحسب المؤشر</div>
+              <div class="chart-card-subtitle">نسبة كل خسارة من الإجمالي بعد التخفيف</div>
+            </div>
+            <span class="chart-card-badge">6 مؤشرات</span>
+          </div>
+          <div class="chart-container">
+            <div class="donut-wrap">
+              <div class="donut-svg-wrap">
+                <svg class="donut-svg" viewBox="0 0 100 100" id="donutChart"></svg>
+                <div class="donut-center">
+                  <div class="donut-center-value" id="donutCenterValue">1.53M</div>
+                  <div class="donut-center-label">إجمالي ر.س</div>
+                </div>
+              </div>
+              <div class="donut-legend" id="donutLegend"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <div>
+              <div class="chart-card-title">الأداء الفعلي مقابل المعيار</div>
+              <div class="chart-card-subtitle">قياس فجوة الأداء على المؤشرات الرئيسية</div>
+            </div>
+            <span class="chart-card-badge">مقارنة</span>
+          </div>
+          <div class="chart-container">
+            <div class="bars-wrap" id="barsChart"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- جدول المؤشرات -->
+      <div class="kpi-table">
+        <table>
+          <thead>
+            <tr>
+              <th>المؤشر</th>
+              <th>الأداء الفعلي</th>
+              <th>المعيار المرجعي</th>
+              <th>الفجوة</th>
+              <th>الحالة</th>
+            </tr>
+          </thead>
+          <tbody id="kpiTableBody">
+            <!-- يتم التوليد ديناميكياً -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- سيناريوهات التعويض -->
+      <div class="scenarios">
+        <div class="scenarios-header">
+          <div class="scenarios-eyebrow">سيناريوهات المطالبة بالتعويض</div>
+          <h3 class="scenarios-title">ثلاثة مواقف تفاوضية متدرجة</h3>
+        </div>
+        <div class="scenarios-grid">
+          <div class="scenario-card">
+            <div class="scenario-badge">السيناريو الأول</div>
+            <div class="scenario-name">متحفّظ</div>
+            <div class="scenario-pct">50% من الخسائر الموثقة</div>
+            <div class="scenario-amount" id="scenario-min">765,968.04</div>
+            <div class="scenario-unit">ريال سعودي</div>
+            <div class="scenario-desc">
+              أرضية تفاوضية أولية تعرض حسن النية مع الاحتفاظ بحق المطالبة بالباقي لاحقاً.
+            </div>
+          </div>
+          <div class="scenario-card">
+            <div class="scenario-badge">السيناريو الثاني</div>
+            <div class="scenario-name">واقعي</div>
+            <div class="scenario-pct">75% من الخسائر الموثقة</div>
+            <div class="scenario-amount" id="scenario-mid">1,148,952.06</div>
+            <div class="scenario-unit">ريال سعودي</div>
+            <div class="scenario-desc">
+              موقف تفاوضي متوازن مدعوم بالأدلة الذاتية والكمية مع هامش للحوار.
+            </div>
+          </div>
+          <div class="scenario-card featured">
+            <div class="scenario-badge">المعتمد</div>
+            <div class="scenario-name">صارم</div>
+            <div class="scenario-pct">100% من الخسائر الموثقة</div>
+            <div class="scenario-amount" id="scenario-max">1,531,936.07</div>
+            <div class="scenario-unit">ريال سعودي</div>
+            <div class="scenario-desc">
+              كامل الخسائر الموثقة بعد عوامل التخفيف لصالح الشركة. الموقف المعتمد من الجمعية.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============================================================
+       التذييل
+       ============================================================ -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-mark">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M12 2L2 7v6c0 5.5 4.25 10.75 10 12 5.75-1.25 10-6.5 10-12V7L12 2z"
+                stroke="currentColor" stroke-width="1.5" fill="rgba(201,162,39,0.05)"/>
+          <path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="footer-org">جمعية سندكم الأهلية</div>
+      <div style="font-size: 13px; color: rgba(255, 255, 255, 0.5); margin-bottom: 8px;">
+        جميع الحقوق محفوظة © 2026م
+      </div>
+      <div class="footer-divider"></div>
+      <div class="footer-credit">
+        إعداد: مستشار الأعمال <strong>إبراهيم مهارش</strong>
+      </div>
+      <div class="footer-meta">
+        وثيقة سرية لأغراض التوثيق والتفاوض · الإصدار 1.0 · يونيو 2026م
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+<!-- ============================================================
+     JavaScript
+     ============================================================ -->
+<script>
+// ============================================================
+// 1. كلمة المرور
+// ============================================================
+const ACCESS_PASSWORD = 'Sandam2026'; // ← غيّر كلمة المرور هنا
+const SESSION_KEY = 'sandam_access_v1';
+
+function checkAuth(event) {
+  event.preventDefault();
+  const input = document.getElementById('pwd').value;
+  const errorBox = document.getElementById('auth-error');
+  if (input === ACCESS_PASSWORD) {
+    sessionStorage.setItem(SESSION_KEY, 'granted');
+    unlockApp();
+  } else {
+    errorBox.classList.add('show');
+    setTimeout(() => errorBox.classList.remove('show'), 3000);
+    document.getElementById('pwd').value = '';
+    document.getElementById('pwd').focus();
+  }
+  return false;
+}
+
+function unlockApp() {
+  const gate = document.getElementById('auth-gate');
+  const app = document.getElementById('app');
+  gate.style.transition = 'opacity 0.5s ease';
+  gate.style.opacity = '0';
+  setTimeout(() => {
+    gate.style.display = 'none';
+    app.classList.add('visible');
+    document.querySelectorAll('.reveal').forEach((el, i) => {
+      setTimeout(() => el.classList.add('visible'), 150 + i * 200);
+    });
+    initCharts();
+  }, 500);
+}
+
+function togglePwd() {
+  const pwd = document.getElementById('pwd');
+  pwd.type = pwd.type === 'password' ? 'text' : 'password';
+}
+
+// تحقق من الجلسة المعتمدة سابقاً
+if (sessionStorage.getItem(SESSION_KEY) === 'granted') {
+  document.addEventListener('DOMContentLoaded', unlockApp);
+}
+
+// ============================================================
+// 2. القائمة المتنقلة على الجوال
+// ============================================================
+function toggleMenu() {
+  document.getElementById('navLinks').classList.toggle('open');
+}
+document.querySelectorAll('.nav-link').forEach(link => {
+  link.addEventListener('click', () => {
+    document.getElementById('navLinks').classList.remove('open');
+  });
+});
+
+// ============================================================
+// 3. النموذج المحاسبي الديناميكي
+// ============================================================
+const state = {
+  totalDonations: 1603409.78,
+  totalSpend: 1104420.41,
+  totalSessions: 221549,
+  totalDonors: 160341,
+  avgDonation: 10,
+  campaignDays: 150,
+  roasActual: 1.45,
+  roasBenchmark: 3.0,
+  crActual: 0.0072,
+  crBenchmark: 0.025,
+  cpmActual: 21.31,
+  cpmBenchmark: 10,
+  applePayDays: 22,
+  applePayShare: 0.45,
+  sallaDays: 14,
+  sallaDecline: 0.85,
+  ramadanNights: 8,
+  ramadanMultiplier: 3.5,
+  stopStartCount: 10,
+  learningPhaseLoss: 0.20,
+  mfRoas: 0.30,
+  mfCr: 0.20,
+  mfApplePay: 0.75,
+  mfSalla: 0.60,
+  mfRamadan: 0.75,
+  mfStopStart: 0.50,
+};
+
+function calculate(s) {
+  const avgDaily = s.totalDonations / s.campaignDays;
+  const avgPeak = avgDaily * s.ramadanMultiplier;
+  const cpdr = s.totalSpend / s.totalDonations;
+  const roasGapPct = (s.roasBenchmark - s.roasActual) / s.roasBenchmark;
+
+  const lossRoasBase = s.totalDonations * roasGapPct;
+  const lossRoasFinal = lossRoasBase * s.mfRoas;
+
+  const crExpected = s.totalDonations * s.crBenchmark / s.crActual;
+  const lossCrBase = crExpected - s.totalDonations;
+  const lossCrFinal = lossCrBase * s.mfCr;
+
+  const lossApBase = avgDaily * s.applePayDays * s.applePayShare;
+  const lossApFinal = lossApBase * s.mfApplePay;
+
+  const lossSallaBase = avgDaily * s.sallaDays * s.sallaDecline;
+  const lossSallaFinal = lossSallaBase * s.mfSalla;
+
+  const lossRamadanBase = avgPeak * s.ramadanNights;
+  const lossRamadanFinal = lossRamadanBase * s.mfRamadan;
+
+  const lossSsBase = s.totalSpend * s.learningPhaseLoss;
+  const lossSsFinal = lossSsBase * s.mfStopStart;
+
+  const totalBase = lossRoasBase + lossCrBase + lossApBase + lossSallaBase + lossRamadanBase + lossSsBase;
+  const totalFinal = lossRoasFinal + lossCrFinal + lossApFinal + lossSallaFinal + lossRamadanFinal + lossSsFinal;
+
+  // الفرصة الضائعة (وفق منهجية الإكسل الأصلي):
+  // = إجمالي التبرعات المحتملة لو لم تحدث الإخفاقات
+  // = التبرعات الفعلية + إجمالي الخسائر النهائية (بعد التخفيف)
+  // مثال: 1,603,409.78 + 1,531,936.07 = 3,135,345.85
+  const opportunityLost = s.totalDonations + totalFinal;
+
+  // ROAS لو لم تحدث الإخفاقات = الفرصة الضائعة ÷ الإنفاق
+  // مثال: 3,135,345.85 ÷ 1,104,420.41 = 2.84x
+  const roasWithoutLosses = opportunityLost / s.totalSpend;
+
+  return {
+    avgDaily, avgPeak, cpdr, roasGapPct, crExpected,
+    losses: {
+      roas: { base: lossRoasBase, final: lossRoasFinal },
+      cr: { base: lossCrBase, final: lossCrFinal },
+      ap: { base: lossApBase, final: lossApFinal },
+      salla: { base: lossSallaBase, final: lossSallaFinal },
+      ramadan: { base: lossRamadanBase, final: lossRamadanFinal },
+      ss: { base: lossSsBase, final: lossSsFinal },
+    },
+    totalBase, totalFinal, opportunityLost, roasWithoutLosses
+  };
+}
+
+// ============================================================
+// 4. أدوات تنسيق
+// ============================================================
+const fmt = {
+  sar: (n) => n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ر.س',
+  int: (n) => Math.round(n).toLocaleString('en-US'),
+  intPlus: (n) => Math.round(n).toLocaleString('en-US') + '+ مرة',
+  pct: (n) => (n * 100).toLocaleString('en-US', { maximumFractionDigits: 1 }) + '%',
+  pct2: (n) => (n * 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%',
+  x: (n) => n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + 'x',
+  raw: (n) => n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+  rawInt: (n) => Math.round(n).toLocaleString('en-US'),
+  num: (n, d = 2) => n.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d }),
+};
+
+// ============================================================
+// 5. ربط القيم والتحديث
+// ============================================================
+function applyBindings() {
+  // ربط الـ data-bind
+  document.querySelectorAll('[data-bind]').forEach(el => {
+    const [key, type = 'raw'] = el.getAttribute('data-bind').split('|');
+    const val = state[key];
+    if (val === undefined) return;
+    el.textContent = fmt[type] ? fmt[type](val) : val;
+  });
+}
+
+function applyCalculations() {
+  const r = calculate(state);
+
+  // قيم محسوبة في قسم المدخلات
+  const set = (id, val) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val;
+  };
+  set('calc-avgDaily', fmt.raw(r.avgDaily));
+  set('calc-avgPeak', fmt.raw(r.avgPeak));
+  set('calc-cpdr', fmt.pct2(r.cpdr));
+
+  // Audit trail values
+  document.querySelectorAll('[data-calc]').forEach(el => {
+    const key = el.getAttribute('data-calc');
+    let val;
+    switch (key) {
+      case 'roasGapPct': val = fmt.pct2(r.roasGapPct); break;
+      case 'crExpected': val = fmt.sar(r.crExpected); break;
+      case 'avgDailyAudit':
+      case 'avgDailyAudit2': val = fmt.sar(r.avgDaily); break;
+      case 'avgPeakAudit': val = fmt.sar(r.avgPeak); break;
+      case 'loss-roas-base': val = fmt.raw(r.losses.roas.base) + '<span class="loss-amount-unit"> ر.س</span>'; break;
+      case 'loss-roas-final': val = fmt.raw(r.losses.roas.final) + '<span class="loss-amount-unit"> ر.س</span>'; break;
+      case 'loss-cr-base': val = fmt.raw(r.losses.cr.base) + '<span class="loss-amount-unit"> ر.س</span>'; break;
+      case 'loss-cr-final': val = fmt.raw(r.losses.cr.final) + '<span class="loss-amount-unit"> ر.س</span>'; break;
+      case 'loss-ap-base': val = fmt.raw(r.losses.ap.base) + '<span class="loss-amount-unit"> ر.س</span>'; break;
+      case 'loss-ap-final': val = fmt.raw(r.losses.ap.final) + '<span class="loss-amount-unit"> ر.س</span>'; break;
+      case 'loss-salla-base': val = fmt.raw(r.losses.salla.base) + '<span class="loss-amount-unit"> ر.س</span>'; break;
+      case 'loss-salla-final': val = fmt.raw(r.losses.salla.final) + '<span class="loss-amount-unit"> ر.س</span>'; break;
+      case 'loss-ramadan-base': val = fmt.raw(r.losses.ramadan.base) + '<span class="loss-amount-unit"> ر.س</span>'; break;
+      case 'loss-ramadan-final': val = fmt.raw(r.losses.ramadan.final) + '<span class="loss-amount-unit"> ر.س</span>'; break;
+      case 'loss-ss-base': val = fmt.raw(r.losses.ss.base) + '<span class="loss-amount-unit"> ر.س</span>'; break;
+      case 'loss-ss-final': val = fmt.raw(r.losses.ss.final) + '<span class="loss-amount-unit"> ر.س</span>'; break;
+    }
+    if (val !== undefined) el.innerHTML = val;
+  });
+
+  // Hero KPIs
+  set('hero-donations', fmt.raw(state.totalDonations));
+  set('hero-spend', fmt.raw(state.totalSpend));
+  set('hero-loss', fmt.raw(r.totalFinal));
+  set('hero-opp', fmt.raw(r.opportunityLost));
+
+  // Totals
+  set('total-base', fmt.raw(r.totalBase));
+  set('total-final', fmt.raw(r.totalFinal));
+  set('total-opp', fmt.raw(r.opportunityLost));
+  set('total-roas-without', fmt.num(r.roasWithoutLosses, 2) + 'x');
+
+  // Scenarios
+  set('scenario-min', fmt.raw(r.totalFinal * 0.5));
+  set('scenario-mid', fmt.raw(r.totalFinal * 0.75));
+  set('scenario-max', fmt.raw(r.totalFinal));
+
+  // KPI table
+  buildKpiTable(r);
+
+  // Update charts
+  updateCharts();
+}
+
+function buildKpiTable(r) {
+  const body = document.getElementById('kpiTableBody');
+  if (!body) return;
+  const rows = [
+    {
+      name: 'ROAS',
+      actual: fmt.x(state.roasActual),
+      bench: fmt.x(state.roasBenchmark),
+      gap: '−' + fmt.pct2(r.roasGapPct),
+      status: 'إخفاق'
+    },
+    {
+      name: 'معدل التحويل (CR)',
+      actual: fmt.pct2(state.crActual),
+      bench: fmt.pct2(state.crBenchmark),
+      gap: '−' + fmt.pct((state.crBenchmark - state.crActual) / state.crBenchmark),
+      status: 'إخفاق حاد'
+    },
+    {
+      name: 'CPM على Meta',
+      actual: fmt.raw(state.cpmActual) + ' ر.س',
+      bench: fmt.raw(state.cpmBenchmark) + ' ر.س',
+      gap: '+' + fmt.pct((state.cpmActual - state.cpmBenchmark) / state.cpmBenchmark),
+      status: 'إخفاق'
+    },
+    {
+      name: 'جاهزية Apple Pay',
+      actual: '≈ 73%',
+      bench: '99.9%',
+      gap: '−26.9 نقطة',
+      status: 'إخفاق حاد'
+    },
+    {
+      name: 'استقرار سلة',
+      actual: '≈ 86%',
+      bench: '99.5%',
+      gap: '−13.5 نقطة',
+      status: 'إخفاق'
+    },
+    {
+      name: 'استمرارية الحملات',
+      actual: state.stopStartCount + '+ مرة',
+      bench: '≤ 3 مرات',
+      gap: '+233%',
+      status: 'إخفاق'
+    },
+    {
+      name: 'نسبة الإنفاق إلى التبرعات',
+      actual: fmt.pct2(r.cpdr),
+      bench: '20–30%',
+      gap: '+' + fmt.num((r.cpdr - 0.25) * 100, 1) + ' نقطة',
+      status: 'تجاوز الحد'
+    },
+  ];
+
+  body.innerHTML = rows.map(row => `
+    <tr>
+      <td class="kpi-name">${row.name}</td>
+      <td class="kpi-actual">${row.actual}</td>
+      <td class="kpi-benchmark">${row.bench}</td>
+      <td class="kpi-gap">${row.gap}</td>
+      <td><span class="status-chip ${row.status.includes('حاد') ? 'severe' : ''}">${row.status}</span></td>
+    </tr>
+  `).join('');
+}
+
+// ============================================================
+// 6. ربط المدخلات بالحالة
+// ============================================================
+function bindInputs() {
+  document.querySelectorAll('input[data-key]').forEach(input => {
+    input.addEventListener('input', (e) => {
+      const key = e.target.getAttribute('data-key');
+      const val = parseFloat(e.target.value);
+      if (!isNaN(val)) {
+        state[key] = val;
+        applyBindings();
+        applyCalculations();
+      }
+    });
+  });
+}
+
+// ============================================================
+// 7. الرسوم البيانية المخصصة (SVG + CSS — بدون اعتماديات)
+// ============================================================
+const CHART_COLORS = {
+  cr:      '#B22222',
+  ramadan: '#1F3A68',
+  ss:      '#C9A227',
+  roas:    '#4A6491',
+  ap:      '#8FA3BF',
+  salla:   '#1F7A4D',
+};
+
+const CHART_LABELS = {
+  cr:      'معدل التحويل (CR)',
+  ramadan: 'العشر الأواخر',
+  ss:      'الإيقاف/التشغيل',
+  roas:    'ROAS',
+  ap:      'Apple Pay',
+  salla:   'منصة سلة',
+};
+
+function renderDonut(r) {
+  const svg = document.getElementById('donutChart');
+  const legend = document.getElementById('donutLegend');
+  const center = document.getElementById('donutCenterValue');
+  if (!svg) return;
+
+  const data = [
+    { key: 'cr',      value: r.losses.cr.final },
+    { key: 'ramadan', value: r.losses.ramadan.final },
+    { key: 'ss',      value: r.losses.ss.final },
+    { key: 'roas',    value: r.losses.roas.final },
+    { key: 'ap',      value: r.losses.ap.final },
+    { key: 'salla',   value: r.losses.salla.final },
+  ];
+  const total = data.reduce((sum, d) => sum + d.value, 0);
+
+  // قطر الدائرة 80، الإحاطة = 2πr ≈ 251.33
+  const R = 40;
+  const C = 2 * Math.PI * R;
+  let offset = 0;
+
+  svg.innerHTML = data.map(d => {
+    const pct = d.value / total;
+    const dash = pct * C;
+    const seg = `<circle class="donut-segment"
+                  cx="50" cy="50" r="${R}"
+                  stroke="${CHART_COLORS[d.key]}"
+                  stroke-dasharray="${dash} ${C - dash}"
+                  stroke-dashoffset="${-offset}">
+                  <title>${CHART_LABELS[d.key]}: ${fmt.raw(d.value)} ر.س (${(pct * 100).toFixed(1)}%)</title>
+                </circle>`;
+    offset += dash;
+    return seg;
+  }).join('');
+
+  // عداد المركز
+  if (center) {
+    center.textContent = (total / 1000000).toFixed(2) + 'M';
+  }
+
+  // البطاقات الجانبية
+  if (legend) {
+    legend.innerHTML = data
+      .sort((a, b) => b.value - a.value)
+      .map(d => `
+        <div class="legend-item">
+          <span class="legend-swatch" style="background:${CHART_COLORS[d.key]}"></span>
+          <span class="legend-label">${CHART_LABELS[d.key]}</span>
+          <span class="legend-value">${((d.value / total) * 100).toFixed(1)}%</span>
+        </div>
+      `).join('');
+  }
+}
+
+function renderBars(r) {
+  const wrap = document.getElementById('barsChart');
+  if (!wrap) return;
+
+  // المؤشرات الأربعة الرئيسية مع تطبيع القيم لرسم الأشرطة
+  const groups = [
+    {
+      label: 'ROAS',
+      actual: state.roasActual,
+      benchmark: state.roasBenchmark,
+      max: Math.max(state.roasActual, state.roasBenchmark) * 1.1,
+      fmtActual: fmt.x(state.roasActual),
+      fmtBench: fmt.x(state.roasBenchmark),
+    },
+    {
+      label: 'CR (%)',
+      actual: state.crActual * 100,
+      benchmark: state.crBenchmark * 100,
+      max: Math.max(state.crActual, state.crBenchmark) * 100 * 1.1,
+      fmtActual: fmt.pct2(state.crActual),
+      fmtBench: fmt.pct2(state.crBenchmark),
+    },
+    {
+      label: 'CPM (ر.س)',
+      // عكسي: الأعلى أسوأ
+      actual: state.cpmActual,
+      benchmark: state.cpmBenchmark,
+      max: Math.max(state.cpmActual, state.cpmBenchmark) * 1.1,
+      fmtActual: fmt.raw(state.cpmActual),
+      fmtBench: fmt.raw(state.cpmBenchmark),
+      reversed: true,
+    },
+    {
+      label: 'Uptime (%)',
+      actual: 73,
+      benchmark: 99.9,
+      max: 100,
+      fmtActual: '73%',
+      fmtBench: '99.9%',
+    },
+  ];
+
+  wrap.innerHTML = groups.map(g => `
+    <div class="bar-group">
+      <div class="bar-group-label">${g.label}</div>
+      <div class="bar-group-bars">
+        <div class="bar-line">
+          <span class="bar-tag">فعلي</span>
+          <div class="bar-track">
+            <div class="bar-fill actual" style="width: ${Math.min(100, (g.actual / g.max) * 100)}%"></div>
+          </div>
+          <span class="bar-value">${g.fmtActual}</span>
+        </div>
+        <div class="bar-line">
+          <span class="bar-tag">معيار</span>
+          <div class="bar-track">
+            <div class="bar-fill benchmark" style="width: ${Math.min(100, (g.benchmark / g.max) * 100)}%"></div>
+          </div>
+          <span class="bar-value">${g.fmtBench}</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderCharts() {
+  const r = calculate(state);
+  renderDonut(r);
+  renderBars(r);
+}
+
+function initCharts() {
+  renderCharts();
+}
+
+function updateCharts() {
+  renderCharts();
+}
+
+// ============================================================
+// 8. تنشيط النص النشط في شريط التنقل
+// ============================================================
+function setupScrollSpy() {
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-link');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        navLinks.forEach(link => {
+          link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, { rootMargin: '-30% 0px -60% 0px' });
+  sections.forEach(s => observer.observe(s));
+}
+
+// ============================================================
+// 9. التهيئة
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => {
+  bindInputs();
+  applyBindings();
+  applyCalculations();
+  setupScrollSpy();
+  initCharts();
+
+  // Reveal animations
+  if (sessionStorage.getItem(SESSION_KEY) === 'granted') {
+    document.querySelectorAll('.reveal').forEach((el, i) => {
+      setTimeout(() => el.classList.add('visible'), 150 + i * 200);
+    });
+  }
+});
+</script>
+
+</body>
+</html>
